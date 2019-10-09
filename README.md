@@ -1,41 +1,48 @@
 # R_data_analysis_project
 
-##Global information
+## Global information
 <br/>
 
-###Authors :
+### Authors :
 <br/>
-- **Aniss Ilyes BENTEBIB** _(1st year of Master degree [computer science] related to Natural Language Processing)_<br/>
-- **Camille-Amaury JUGE** _(1st year of Master degree [computer science] related to Data Science)_<br/><br/>
-- This package is under the license : CC-BY-4.0, free to use except for commercial.
+- **Aniss Ilyes BENTEBIB** _(1st year of Master degree [computer science] related to Natural Language Processing)_.<br/>
+- **Camille-Amaury JUGE** _(1st year of Master degree [computer science] related to Data Science)_.<br/>
+- This package is under the license : _CC-BY-4.0_, free to use except for commercial.<br/><br/>
 
-###Objectives :
+### Objectives :
 <br/>
-- see the file nammed "Exercise_Lise_Bellanger_Univ_Nantes.pdf"<br/>
-- This project is related to the 1st year master Degree "Analyse de de données" held by Lise BELLANGER-HUSI in 2019.<br/><br/>
-- see the final report of this project nammed "JUGE_BENTEBIB_ADD_Project.pdf"
+- see the file nammed _"Exercise_Lise_Bellanger_Univ_Nantes.pdf"_.<br/>
+- This project is related to the 1st year master Degree _"Analyse de de données"_ held by **Lise BELLANGER-HUSI** in 2019.<br/>
+- see the final report of this project nammed _"JUGE_BENTEBIB_ADD_Project.pdf"_.<br/><br/>
 
-###Language, Tools used :
+### Language, Tools used :
 <br/>
 - R<br/>
 - Anaconda 3 Environment<br/>
 - Trello and Git<br/>
 - Jupyter Notebook <br/><br/>
 
-##Documentation
+## Documentation
+<br/>
 <br/>
 
-###Installation and beginning
+### Installation and beginning
 <br/>
-Download the package on ... (coming soon).<br/><br/>
+<br/>
+Download the package on ... (coming soon).
+<br/>
+<br/>
+After the package is installed, just use it as a normal library in R.
+<br/>
+<br/>
 
-After the package is installed, just use it as a normal library in R.<br/><br/>
 ```R
 library(nantes_statistical_analysis)
 ```
-<br/><br/>
-
-###Principal component analysis 
+<br/>
+<br/>
+### Principal component analysis 
+<br/>
 <br/>
 The pca function have three main categories :
 - The base objects (matrix and calculation to prepare our pca)<br/>
@@ -49,10 +56,13 @@ In the future, the pca's object could be used in other functions to draw multipl
 #By Default
 nantes_pca <- pca(M, bias=FALSE, scale=TRUE)
 ```
+
 <br/>
 This will return a list of pca components including :
 <br/>
+
 ```R
+# Base components
 nantes_pca$base #the main matrix
 nantes_pca$G #the gravity center of your matrix
 nantes_pca$M_centered #the centered matrix
