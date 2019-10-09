@@ -5,15 +5,15 @@
 
 ### Authors :
 <br/>
-- **Aniss Ilyes BENTEBIB** _(1st year of Master degree [computer science] related to Natural Language Processing)_.<br/>
-- **Camille-Amaury JUGE** _(1st year of Master degree [computer science] related to Data Science)_.<br/>
-- This package is under the license : _CC-BY-4.0_, free to use except for commercial.<br/><br/>
+- <b>Aniss Ilyes BENTEBIB</b> <i>(1st year of Master degree [computer science] related to Natural Language Processing)</i>.<br/>
+- <b>Camille-Amaury JUGE</b> <i>(1st year of Master degree [computer science] related to Data Science)</i>.<br/>
+- This package is under the license : <i>CC-BY-4.0</i>, free to use except for commercial.<br/><br/>
 
 ### Objectives :
 <br/>
-- see the file nammed _"Exercise_Lise_Bellanger_Univ_Nantes.pdf"_.<br/>
-- This project is related to the 1st year master Degree _"Analyse de de données"_ held by **Lise BELLANGER-HUSI** in 2019.<br/>
-- see the final report of this project nammed _"JUGE_BENTEBIB_ADD_Project.pdf"_.<br/><br/>
+- see the file nammed <i>"Exercise_Lise_Bellanger_Univ_Nantes.pdf"</i>.<br/>
+- This project is related to the 1st year master Degree <i>"Analyse de de données"</i> held by <b>Lise BELLANGER-HUSI</b> in 2019.<br/>
+- see the final report of this project nammed <i>"JUGE_BENTEBIB_ADD_Project.pdf"</i>.<br/><br/>
 
 ### Language, Tools used :
 <br/>
@@ -23,7 +23,6 @@
 - Jupyter Notebook <br/><br/>
 
 ## Documentation
-<br/>
 <br/>
 
 ### Installation and beginning
@@ -40,7 +39,7 @@ After the package is installed, just use it as a normal library in R.
 library(nantes_statistical_analysis)
 ```
 <br/>
-<br/>
+
 ### Principal component analysis 
 <br/>
 <br/>
@@ -69,7 +68,7 @@ nantes_pca$M_centered #the centered matrix
 nantes_pca$S #the covariance matrix (if bias=TRUE S main diagonal is the biaised variance 1/n)
 # Depending on the type of PCA you aim to do, the following objects won't appear
 # --> "scale=TRUE" will enable thos following objects to appear
-nantes_pca$1_div_sd #the matrix which contains on its diagonal the (1/standard deviation) of the column 
+nantes_pca$D1_div_sd #the matrix which contains on its diagonal the (1/standard deviation) of the column 
 nantes_pca$M_scale #the centered and reduced matrix
 nantes_pca$R #the correlation matrix
 ```
