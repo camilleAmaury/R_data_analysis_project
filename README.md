@@ -182,5 +182,5 @@ We decided to work additionally on implementing our own Eigen function  :<br/>
 
 ```R
 #By Default
-nantes_kmeans <- eigenfunction(M)
+nantes_eigen <- eigenfunction(M)
 ```
