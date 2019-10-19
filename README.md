@@ -43,7 +43,7 @@ library(nantes_statistical_analysis)
 ### Principal component analysis 
 <br/>
 <br/>
-The pca function have three main categories :
+The pca function have three main categories :<br/>
 - The base objects (matrix and calculation to prepare our pca)<br/>
 - The pca's axes, factors, projection of variables and individuals and more ...<br/>
 - The pca's interpreted datas (inertia, cumulative percentages, correlation)<br/><br/>
@@ -112,7 +112,7 @@ nantes_pca$PCA_component$Gi #Variables matrix projection
 
 <br/>
 <br/>
-The categorical algorithm for classification K-means  :
+The categorical algorithm for classification K-means  :<br/>
 - Returns the cluster as a unique vector with every individuals as an indice, and his value his cluster number<br/>
 - Returns the clusters' centers point<br/>
 - Implements multiple methods (distance, initialization) <br/><br/>
@@ -174,7 +174,7 @@ nantes_kmeans <- kmeansfunction(M, k=2) # k is specified, this will only create 
 
 <br/>
 <br/>
-We decided to work additionally on implementing our own Eigen function  :
+We decided to work additionally on implementing our own Eigen function  :<br/>
 - returns the same parameters than R's eigen function<br/>
 - Use the QR algorithm, with the method of HouseHolders, which is a numerically stable algorithm rather than Givens ones.<br/>
 - Is really efficient on small sized and symmetric matrix, else vectors suffers of round problems (we didn't find the solution to improve it) <br/><br/>
