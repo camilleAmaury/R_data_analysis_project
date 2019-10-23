@@ -1,5 +1,5 @@
 
-pcafunction <- function(M, center=TRUE, scale=TRUE, bias=FALSE, Q=diag(dim(M)[2]), D=(1/dim(M)[1])*diag(dim(M)[1]), axisMethod="kaiser", axisNumber=-1){
+pcafunction <- function(M, center=TRUE, scale=TRUE, bias=FALSE, Q=diag(dim(M)[2]), D=(1/dim(M)[1])*diag(dim(M)[1]), axisMethod="elbow", axisNumber=-1){
   # returned object :
   base_result = list("base"=M)
 
@@ -57,42 +57,41 @@ pcafunction <- function(M, center=TRUE, scale=TRUE, bias=FALSE, Q=diag(dim(M)[2]
 
   # --------------------------------------------------------- MAIN PCA COMPONENT --------------------------------------------------------- #
   component_pca <- function(X, Q, D, AxisMethod, axisNumber){
-    number_axes_conservated <- function(eigenvalues, method){
-      i <- 0
+    cumulative_information_caught <- function(eigenvalues){
+      inertia <- function(eigenvalues){
+        return(sum(eigenvalues))
+      }
+      information_caught <- function(eigenvalues){
+        return(eigenvalues/inertia(eigenvalues)*100)
+      }
+      res <- list("global_inertia"=inertia(eigenvalues),"inertia"=information_caught(eigenvalues))
+      return(append(res, list("inertia_cumulated"=cumsum(res$inertia))))
+    }
+    number_axes_conservated <- function(inertia, global_inertia, method, size=length(inertia)){
+      res <- c()
       if(method=="kaiser"){
-        for(val in eigenvalues){
-          if(val > 1){
-            i <- i + 1
-          }
-        }
+        res <- inertia[inertia > 100/global_inertia]
       }
 
       if(method=="elbow"){
-        lastval <- eigenvalues[1]
-        i <- i + 1
-        for(val in eigenvalues[2:length(eigenvalues)]){
-          if((lastval - val)/lastval <= 0.5){
-            lastval <- val
-            i <- i + 1
-          }
-        }
+        res <- inertia[inertia > 100/size]
       }
-
-      return(i)
+      return(length(res))
     }
     # building PCA main component
-    pca_component <- list("Si"=t(X) %*% D %*% X %*% Q)
+    pca_component <- list("Si"=t(X) %*% D %*% X %*% Q, "X"=X)
 
     # eigen values and vectors
     eig <- eigen(pca_component[["Si"]])
-    eig[["vectors"]] <- round(eig[["vectors"]], 6)
-    eig[["values"]] <- round(eig[["values"]], 6)
+    eig[["values"]] <- round(eig[["values"]][round(eig[["values"]], 6) != 0], 6)
+    eig[["vectors"]] <- round(eig[["vectors"]][,1:length(eig[["values"]])], 6)
 
     # choose the right number of axis
-    axis_conservated <- if(axisNumber == -1) number_axes_conservated(eig[["values"]], axisMethod) else axisNumber
+    pca_component <- append(pca_component,cumulative_information_caught(eig[["values"]]))
+    axis_conservated <- if(axisNumber == -1) number_axes_conservated(pca_component$inertia, pca_component$global_inertia, axisMethod) else axisNumber
     eig[["vectors"]] <- matrix(eig[["vectors"]][,1:axis_conservated], ncol=axis_conservated)
     eig[["values"]] <- eig[["values"]][1:axis_conservated]
-    pca_component <- append(pca_component, eig)
+    pca_component <- append(pca_component, append(list("axisNumber"=axis_conservated),eig))
 
     # calculs des Fi et Gi
     individuals_variables <- function(X, axis_conservated, eigenValues, eigenVectors){
@@ -125,19 +124,6 @@ pcafunction <- function(M, center=TRUE, scale=TRUE, bias=FALSE, Q=diag(dim(M)[2]
 
   # --------------------------------------------------------- PCA INTERPRETATION RESULT --------------------------------------------------------- #
   pca_inter <- list()
-  inertia <- function(eigenvalues){
-    return(sum(eigenvalues))
-  }
-
-  cumulative_information_caught <- function(eigenvalues, num_axes = 2, percent = T){
-    return(sum(eigenvalues[1:num_axes])/inertia(eigenvalues)((1-(percent1))+(percent1)*100))
-  }
-
-  information_caught <- function(eigenvalues, index_axe, percent = T){
-    return(eigen_values[index_axe]/inertia(eigenvalues)((1-(percent1))+(percent1)*100))
-  }
-
-
   contribution_abs <- function(individual, main_comp, F, eigenvalues){
     return((F[individual, main_comp]**2)/(length(eigenvalues)*eigenvalues[main_comp]))
   }
@@ -153,9 +139,7 @@ pcafunction <- function(M, center=TRUE, scale=TRUE, bias=FALSE, Q=diag(dim(M)[2]
   cumulative_contribution_rel <- function(individual, main_comps, F, eigenvalues){
     return(rowSums(F[individual, 1:main_comps]**2)/rowSums(F**2)[individual])
   }
-
   # process here
-
 
   li_res <- append(li_res, pca_inter)
   return(li_res)
