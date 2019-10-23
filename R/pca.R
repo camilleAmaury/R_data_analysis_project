@@ -1,5 +1,5 @@
 
-pca <- function(M, center=TRUE, scale=TRUE, bias=FALSE, Q=diag(dim(M)[2]), D=(1/dim(M)[1])*diag(dim(M)[1]), axisMethod="kaiser", axisNumber=-1){
+pcafunction <- function(M, center=TRUE, scale=TRUE, bias=FALSE, Q=diag(dim(M)[2]), D=(1/dim(M)[1])*diag(dim(M)[1]), axisMethod="kaiser", axisNumber=-1){
   # returned object :
   base_result = list("base"=M)
 
@@ -162,4 +162,4 @@ pca <- function(M, center=TRUE, scale=TRUE, bias=FALSE, Q=diag(dim(M)[2]), D=(1/
 }
 
 M <- matrix(c(1:3, c(7,3,5), c(5,11,30), c(20,15,1), c(20,40,19)), nrow=5, byrow=T)
-print(pca(M))
+print(pcafunction(M))
