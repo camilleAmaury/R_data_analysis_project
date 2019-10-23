@@ -1,4 +1,8 @@
-kmeansfunction <- function(M, k=-1, d="euclidian", initialization="random", precision=0.001, logs=FALSE){
+kmeansfunction <- function(M, k=-1, d="euclidian", initialization="random", precision=0.001, logs=FALSE, seed = -1, kMax = 10){
+  if(seed != -1){
+    set.seed(seed)
+  }
+
   if(k > dim(M)[1]){
     stop(paste0("Impossible to create ", k, " clusters since number of individuals is ", dim(M)[1]))
   }
@@ -178,18 +182,10 @@ kmeansfunction <- function(M, k=-1, d="euclidian", initialization="random", prec
     return(list("clusters"=new_clusters, "centers"=new_centers[["coords"]]))
   }
 
-  #average silhouette cluster determination
-  avgSilhouette <- function(clusters){
-
-  }
-
   # k = -1 to test all cluster number and choose the best cluster number --> to implement
   choosenK <- list()
   if(k == -1){
-    k_Clusters <- list()
-    for(clusterNb in 2:dim(M)[1]){
-      k_Clusters[[toString(clusterNb)]] <- kmeans_process(M, clusterNb, d, initialization, precision, logs)
-    }
+    return(kmeansfunction(M, selectBestKvalue(M, kMax, logs), d, initialization, precision, logs))
     # choose the best k by elbow method
 
   }else{
@@ -201,7 +197,133 @@ kmeansfunction <- function(M, k=-1, d="euclidian", initialization="random", prec
   return(choosenK)
 }
 
-silhouette
+silhouette_imp <- function(M, kMax, plot){
+  matches <- function(i, l){
+    res <- c()
+    for(j in 1:length(l)){
+      if(i == l[j]){
+        res <- c(res, j)
+      }
+    }
+    return(res)
+  }
+  silhouette_ind <- function(i, M, clusters){
+    index_my_cluster = matches(clusters[i], clusters)
+    a <- 0
+
+    if(length(index_my_cluster)>1){
+      for(k in 1:length(index_my_cluster)){
+        if(i != index_my_cluster[k]){
+          distance <- sqrt(sum((M[index_my_cluster[k],]-M[i,])**2))
+          a <- a + distance
+        }
+      }
+      a <- a / (length(index_my_cluster)-1)
+    }else{
+      a <- 0
+    }
+
+    #print(paste0("Distance moyenne du point n",i," à son groupe :", a))
+
+    b <- c()
+    for(j in 1:max(clusters)){
+      if(j != clusters[i]){
+        index_cluster_j = matches(j, clusters)
+        bp <- 0
+        for(k in 1:length(index_cluster_j)){
+          if(i != index_cluster_j[k]){
+            bp <- bp + sqrt(sum((M[index_cluster_j[k],]-M[i,])**2))
+          }
+        }
+        bp <- bp / length(index_cluster_j)
+        #print(paste0("Distance moyenne du point n",i," au groupe ", j, " :", bp))
+        b <- c(b, bp)
+      }
+    }
+
+
+    return((min(b)-a)/max(a, min(b)))
+  }
+
+  res <- c()
+
+  for(km in 2:kMax){
+    kme <- kmeansfunction(M, km, precision = 0.01, seed = 200)
+    ssil <- 0
+    for(k in 1:km){
+
+      ssili <- 0
+      Ik <- matches(k, kme$clusters)
+      for(ik in Ik){
+        ssili <- ssili + silhouette_ind(ik, M, kme$clusters)
+      }
+      ssili <- ssili/length(Ik)
+      ssil <- ssil + ssili
+    }
+    ssil <- ssil/km
+    res <- c(res, ssil)
+  }
+
+  if(plot){
+    plot(2:kMax, res,
+         type = "b", pch = 19, frame = FALSE,
+         xlab = "Number of clusters K",
+         ylab = "Average Silhouettes")
+  }
+
+
+  return(res)
+}
+
+selectBestKvalue <- function(M, kMax = 2, plot = F){
+  argmax <- function(l){
+    max <- 0
+    arg <- 1
+    for(i in 1:length(l)){
+      if(l[i] > max){
+        max <- l[i]
+        arg <- i
+      }
+    }
+    return(arg)
+  }
+
+  softmax <- function(l){
+    theta <- c()
+    print(l)
+    for(i in l){
+      theta <- c(theta, exp(i)/sum(exp(l)))
+    }
+    return(theta)
+  }
+
+  res <- silhouette_imp(M, kMax, plot)
+  i <- c()
+  j <- 2
+  for(val in res[2:kMax-1]){
+    i <- c(i, (1-(j/nrow(M)))*val)
+    j <- j + 1
+  }
+  return(argmax(softmax(i))+1)
+}
+
+generate_dataset <- function(nbCluster, dim=2, nbIndividu=1000, distanceToKernel=1){
+  borne_inf <- 0
+  borne_sup <- 10
+  c <- c()
+  for(i in 1:nbCluster){
+    cluster <- c(sample(borne_sup, dim, replace=FALSE))
+    c <- c(c, cluster)
+    for(j in 1:nbIndividu){
+      c <- c(c, cluster[1]+(distanceToKernel*runif(1, -1, 1)), cluster[2]+(distanceToKernel*runif(1, -1, 1)))
+    }
+  }
+  data <- matrix(c, ncol = dim, byrow = T)
+  plot(data)
+  return(data)
+}
+
+
 
 # --> our algorithm is either implemented with the Forgy or Lloyd algorithm of the stats kmeans function
 # --> https://stat.ethz.ch/R-manual/R-devel/library/stats/html/kmeans.html kmeans documentation, for other algorithm
