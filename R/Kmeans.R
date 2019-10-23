@@ -193,17 +193,15 @@ kmeansfunction <- function(M, k=-1, d="euclidian", initialization="random", prec
     # choose the best k by elbow method
 
   }else{
-    choosenK <- k_Clusters[[toString(clusterNb)]] <- kmeans_process(M, k, d, initialization, precision, logs)
+    choosenK<- kmeans_process(M, k, d, initialization, precision, logs)
   }
 
 
 
   return(choosenK)
 }
-M <- matrix(c(1:3, c(7,3,5), c(5,11,30), c(20,15,1), c(20,40,19)), nrow=5, byrow=T)
-print(M)
-print(kmeansfunction(M, k=2, initialization = "kmeans++"))
-print(kmeansfunction(M, k=2))
+
+silhouette
 
 # --> our algorithm is either implemented with the Forgy or Lloyd algorithm of the stats kmeans function
 # --> https://stat.ethz.ch/R-manual/R-devel/library/stats/html/kmeans.html kmeans documentation, for other algorithm
