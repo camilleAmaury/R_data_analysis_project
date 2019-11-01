@@ -102,6 +102,7 @@ nantes_pca$base_component$R #the correlation matrix
 nantes_pca$PCA_component$Si #the incidence matrix
 nantes_pca$PCA_component$values #eigen values of the incidence matrix
 nantes_pca$PCA_component$vectors #eigen vectors of the incidence matrix
+nantes_pca$PCA_component$rank #the rank of the Si matrix
 nantes_pca$PCA_component$Fi #Individuals matrix projection
 nantes_pca$PCA_component$Gi #Variables matrix projection
 ```
