@@ -117,16 +117,8 @@ kmeansfunction <- function(M, k=-1, d="euclidian", initialization="random", prec
         if(length(u) != length(v)){
           stop(paste0("Impossible to compare a vector of length ", length(u), " to a vector of length ", length(v)))
         }
-        equal = TRUE
-        for(i in 1:length(u)){
-          cond1 <- u[i] <= v[i] + (if(u[i] >= 0) precision else (-precision))
-          cond2 <- u[i] >= v[i] - (if(u[i] >= 0) precision else (- precision))
-          if(!(cond1 && cond2)){
-            equal = FALSE
-            break
-          }
-        }
-        return(equal)
+
+        return(sqrt(sum((v-u)**2)) <= precision)
       }
       if(dim(U)[1] != dim(V)[1]){
         stop(paste0("Impossible to compare a matrix of ", dim(U)[1], " rows to a matrix of ", dim(V)[1], " rows"))
@@ -192,8 +184,14 @@ kmeansfunction <- function(M, k=-1, d="euclidian", initialization="random", prec
     choosenK<- kmeans_process(M, k, d, initialization, precision, logs)
   }
 
-
-
+  M <- cbind(M, choosenK$clusters)
+  if(logs){
+    plot(x = M[,1], y = M[,2], col=sample(c("antiquewhite2", "antiquewhite4", "aquamarine1", "aquamarine4", "azure4",
+                                     "blue2", "brown1", "brown4", "chartreuse", "chartreuse4", "chocolate1",
+                                     "cyan3", "darkgoldenrod1", "darkmagenta", "darkolivegreen1", "deeppink1",
+                                     "gray8"))[M[,ncol(M)]])
+    text(x = M[,1], y = M[,2],label = c(1:length(M[,1])), cex= 0.7, pos=3)
+  }
   return(choosenK)
 }
 
