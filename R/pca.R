@@ -1,9 +1,22 @@
 
 pcafunction <- function(M, center=TRUE, scale=TRUE, bias=FALSE, Q=diag(dim(M)[2]), D=(1/dim(M)[1])*diag(dim(M)[1]), axisMethod="elbow", axisNumber=-1){
   # returned object :
-  base_result = list("base"=M)
-
-
+  base_result = list("base"=as.matrix(M))
+  rownames = c()
+  for(i in 1:dim(M)[1]){
+    rownames = c(rownames, paste0("i", i))
+  }
+  base_result = append(base_result, list("rownames"=rownames))
+  colnames = c()
+  if(is.null(names(M))){
+    for(i in 1:dim(M)[2]){
+      colnames = c(colnames, paste0("v", i))
+    }
+  }else{
+    colnames = names(M)
+  }
+  base_result = append(base_result, list("colnames"=colnames))
+  M <- as.matrix(M)
   # --------------------------------------------------------- BASE COMPUTATION FOR PCA --------------------------------------------------------- #
   # fonction qui calcule la matrice de covariance de la matrice initiale et renvoit toutes les étapes précédentes de calcul
   covariance_matrix <- function(M){
@@ -148,7 +161,7 @@ pcafunction <- function(M, center=TRUE, scale=TRUE, bias=FALSE, Q=diag(dim(M)[2]
       return(ctr)
     }
     # row contribution
-    pca_inter <- append(pca_inter, list("qlt_Fi"=contribution_rel_individuals(Fi), "ctr_Fi"=contribution_abs_individuals(Fi, D, eigenvalues)))
+    pca_inter <- append(pca_inter, list("qlt_Fi"=contribution_rel_individuals(Fi, axisNumber), "ctr_Fi"=contribution_abs_individuals(Fi, D, eigenvalues, axisNumber)))
 
     contribution_rel_variables <- function(Gi, axisNumber){
       qlt <- matrix(0, nrow=dim(Gi)[1], ncol=axisNumber)
@@ -172,7 +185,7 @@ pcafunction <- function(M, center=TRUE, scale=TRUE, bias=FALSE, Q=diag(dim(M)[2]
       return(ctr)
     }
     # columncontribution
-    pca_inter <- append(pca_inter, list("qlt_Gi"=contribution_rel_variables(Gi), "ctr_Gi"=contribution_abs_variables(Gi, Q, eigenvalues)))
+    pca_inter <- append(pca_inter, list("qlt_Gi"=contribution_rel_variables(Gi, axisNumber), "ctr_Gi"=contribution_abs_variables(Gi, Q, eigenvalues, axisNumber)))
 
     return(pca_inter)
   }
