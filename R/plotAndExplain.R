@@ -61,3 +61,61 @@ explainPCA <- function(pca, individualRate=-1, variableRate=-1){
     text(pca$PCA_component$Fi[li[["indi_pos"]],],label = pca$base_component$colnames[li[["indi_pos"]]], cex= 0.7, pos=3)
   }
 }
+
+
+explainDataset <- function(M, colnames, bidimensionnal=FALSE){
+
+  library(e1071)
+
+  # analysis monodimensionnal
+  if(!bidimensionnal){
+    # paramètre de position
+    meanVar <- apply(M,2,mean)
+    modeVar <- apply(M,2,mode)
+    medianVar <- apply(M,2,median)
+    dataframe_position <- data.frame("mean" = meanVar, "median"=medianVar, "mode"=modeVar)
+
+    # paramètre de dispersion
+    quantileVar <- apply(M,2,quantile)
+    sdVar <- apply(M,2,sd)
+    etendueVar <- apply(quantileVar,2,function(x){return(x[5] + if(sign(x[1]) == sign(x[5])) - x[1] else x[1])})
+    interquantileVar <- apply(quantileVar,2,function(x){return(x[4] + if(sign(x[2]) == sign(x[4])) - x[2] else x[2])})
+    dataframe_dispersion <- data.frame("standart deviation" = sdVar, "scope"=etendueVar, "interquantile deviation"=interquantileVar)
+
+    # paramètre de forme
+    kurtosisVar <- apply(M,2,kurtosis)
+    skewnessVar <- apply(M,2,skewness)
+    dataframe_forme <- data.frame("kurtosis" = kurtosisVar, "skewness"=skewnessVar)
+    # il faudrait faire les histo et boxplot de chaque var
+    hist(M[,1])
+    boxplot(M[,1])
+
+    # position
+    print("# ------------------------ # Comparison of position # ------------------------ # ")
+
+    for(i in 1:length(meanVar)){
+      mean_med_comparison <- if(meanVar[i] == medianVar[i]) "Centred Variable" else (if(meanVar[i] * 1.25 >= medianVar[i] && meanVar[i] * 0.75 <= medianVar[i]) "Outliers detected" else "Not centred but no outliers")
+      print(cat("v", i, " : \n", "   mean : ", meanVar[i], "\n   median : ", medianVar[i], "\n   mode : ", modeVar[i], "\n   Comparison between mean and median : ", mean_med_comparison))
+      print("------------------------")
+    }
+
+    # dispersion
+    print("# ------------------------ # Comparison of dispersion # ------------------------ # ")
+    for(i in 1:length(sdVar)){
+      print(cat("v", i, " : \n", "   standart deviation : ", sdVar[i], "\n   scope (outliers can affect) : ", etendueVar[i], "\n   interquantile deviation : ", interquantileVar[i]))
+      print("------------------------")
+    }
+
+    # forme
+    print("# ------------------------ # Comparison of form # ------------------------ # ")
+    for(i in 1:length(sdVar)){
+      kurtosis_interpretation <- if(kurtosisVar[i] == 0) "flattened gauss distrubution" else (if(kurtosisVar[i] > 0) "more concentrated than Gauss" else "more flattened gauss distribution")
+      skewness_interpretation <- if(skewnessVar[i] == 0) "Symmetric distribution" else (if(skewnessVar[i] > 0) "Converging to the right Distribution" else "Converging to the left Distribution")
+      print(cat("v", i, " : \n", "   kurtosis rate : ", kurtosisVar[i], "\n   interpretation : ", kurtosis_interpretation, "\n   skewness rate : ", skewnessVar[i], "\n   interpretation : ", skewness_interpretation))
+      print("------------------------")
+    }
+
+  }else{
+
+  }
+}
