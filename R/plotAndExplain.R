@@ -86,10 +86,12 @@ explainDataset <- function(M, colnames, bidimensionnal=FALSE){
     kurtosisVar <- apply(M,2,kurtosis)
     skewnessVar <- apply(M,2,skewness)
     dataframe_forme <- data.frame("kurtosis" = kurtosisVar, "skewness"=skewnessVar)
-    # il faudrait faire les histo et boxplot de chaque var
-    hist(M[,1])
-    boxplot(M[,1])
 
+    #
+    for(i in 1:ncol(M)){
+      hist(M[,i])
+      boxplot(M[,i])
+    }
     # position
     print("# ------------------------ # Comparison of position # ------------------------ # ")
 
@@ -116,6 +118,30 @@ explainDataset <- function(M, colnames, bidimensionnal=FALSE){
     }
 
   }else{
+    # Test du chi2 pour chaque paire de variable
+    print("# ------------------------ # X2 # ------------------------ # ")
+    for(i in 1:(ncol(M)-1)){
+      newM <- M[,i:i+1]
+      print(chisq.test(newM))
+    }
 
+    meanVar <- apply(M,2,mean)
+    modeVar <- apply(M,2,mode)
+    medianVar <- apply(M,2,median)
+    dataframe_position <- data.frame("mean" = meanVar, "median"=medianVar, "mode"=modeVar)
+
+    for(i in 1:(ncol(M)-1)){
+      hist(M[,i:i+1])
+      plot(M)
+      print(summary(lm(M[,i] ~ M[,i+1])))
+    }
   }
+}
+
+explainKmeans <- function(M, kmeans){
+  plot(x = M[,1], y = M[,2], col=sample(c("antiquewhite2", "antiquewhite4", "aquamarine1", "aquamarine4", "azure4",
+                                          "blue2", "brown1", "brown4", "chartreuse", "chartreuse4", "chocolate1",
+                                          "cyan3", "darkgoldenrod1", "darkmagenta", "darkolivegreen1", "deeppink1",
+                                          "gray8"))[kmeans$clusters])
+  text(x = M[,1], y = M[,2], label = c(1:length(M[,1])), cex= 0.7, pos=3)
 }
