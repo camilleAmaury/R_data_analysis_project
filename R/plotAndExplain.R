@@ -1,5 +1,4 @@
 # --------------------------------------------------------- Functions which can interpret and draw results --------------------------------------------------------- #
-
 explainPCA <- function(pca, individualRate=-1, variableRate=-1){
 
   library(ade4)
@@ -51,8 +50,9 @@ explainPCA <- function(pca, individualRate=-1, variableRate=-1){
     #plot correlation circle
     s.corcircle(pca$PCA_component$Gi[li[["var_neg"]],], xax = 1, yax = 2, label = pca$base_component$colnames[li[["var_neg"]]], clabel = 1, grid = TRUE, sub = paste0("Axis ", i," : variable negative contribution"), csub = 1, possub = "bottomleft", cgrid = 0, fullcircle = TRUE, box = FALSE, add.plot = FALSE)
     #plot correlation circle
-    s.corcircle(pca$PCA_component$Gi[li[["var_pos"]],], xax = 1, yax = 2, label = pca$base_component$colnames[li[["var_pos"]]], clabel = 1, grid = TRUE, sub = paste0("Axis ", i," : variable positive contribution"), csub = 1, possub = "bottomleft", cgrid = 0, fullcircle = TRUE, box = FALSE, add.plot = FALSE)
-
+    #if(is.null(li[["var_pos"]])){
+      #s.corcircle(pca$PCA_component$Gi[li[["var_pos"]],], xax = 1, yax = 2, label = pca$base_component$colnames[li[["var_pos"]]], clabel = 1, grid = TRUE, sub = paste0("Axis ", i," : variable positive contribution"), csub = 1, possub = "bottomleft", cgrid = 0, fullcircle = TRUE, box = FALSE, add.plot = FALSE)
+    #}
     #plot cloud of point
     plot(pca$PCA_component$Fi[li[["indi_neg"]],], type="p",  sub = paste0("Axis ", i," : individual negative contribution"))
     text(pca$PCA_component$Fi[li[["indi_neg"]],], label = pca$base_component$colnames[li[["indi_neg"]]], cex= 0.7, pos=3)
@@ -121,7 +121,7 @@ explainDataset <- function(M, colnames, bidimensionnal=FALSE){
     # Test du chi2 pour chaque paire de variable
     print("# ------------------------ # X2 # ------------------------ # ")
     for(i in 1:(ncol(M)-1)){
-      newM <- M[,i:i+1]
+      newM <- abs(M[,i:i+1])
       print(chisq.test(newM))
     }
 
@@ -132,7 +132,7 @@ explainDataset <- function(M, colnames, bidimensionnal=FALSE){
 
     for(i in 1:(ncol(M)-1)){
       hist(M[,i:i+1])
-      plot(M)
+      #plot(M)
       print(summary(lm(M[,i] ~ M[,i+1])))
     }
   }
