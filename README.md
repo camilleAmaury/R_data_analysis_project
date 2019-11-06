@@ -27,7 +27,7 @@
 - rapport : "/Rapport/Rapport ADD.pdf"<br/>
 - annexes : "/Rapport/Annexes.pdf"<br/>
 - Dataset : "/dataset.csv"<br/>
-- tested function : "/R/test/" <br/><br/>
+- tested function : "/R/test/" <br/>
 - function : "/R/" <br/><br/>
 
 ## Documentation
