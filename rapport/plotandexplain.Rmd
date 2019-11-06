@@ -1,0 +1,80 @@
+---
+title: "Annexes : Plot And Explain"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r}
+library(NantesStatisticalAnalysis)
+```
+
+```{r}
+data <- t(read.csv(file="dataset.csv", header=FALSE, sep=","))
+```
+
+Comment interprétrer une boite à moustaches :
+  --> la boite est délimitée par le premier et neuvième décile de la variable étudiée, ainsi cela nous permet de détecter des valeurs extrêmes (outliers) qui tireraient la distribution.
+  --> les deux extrémités de la boite représente le premier et troisième quartile, par rapport à la médiane, la barre centrale.
+  Cela nous permet d'interpréter la répartition des valeurs étudiées (savoir si la répartition se veut plus centrée, tirée
+  d'un côté ou l'autre)
+  
+Comment interpréter l'histogramme :
+  --> on doit retrouver la même tendance que dans la boite à moustache.
+  --> On remarque très vite la répartition des données, certaines sont centrées et ont donc des valeurs symétriques, d'autre
+  prenne une forme qui s'apparente plus à une distribution du Chi-square (qui tire vers la droite ...).
+  
+(Ici on se limitera au 40 première variables pour des raisons évidentes de tailles des annexes)
+
+```{r}
+explainDataset(data[,1:40], c(1:40))
+```
+
+On remarque que sur la globalité, il y a beaucoup de valeurs extrêmes qui ont tendance à tirer les répartitions. 
+On ne trouve que très peu de répartition centrée. 
+On en déduit ainsi que les variables (gènes) sont très dépendantes de chaque individu, certes ont retrouve tout de même un intervale commun entre le premier et le troisième quartile, mais en dehors, il y a souvent des valeurs extrêmes.
+
+Interprétation du Chi-deux :
+  --> Plus le X-square est élevé plus les variables sont fortement corrélées entre elles et inversement.
+  En dessous d'un certain seuil de la p-value, on peut alors rejeté l'indépendance des deux variables.
+
+Interprétation de la régression linéaire :
+  --> visuellement, si la droite correspond bien à l'étalement des données, on suppose que les variables sont corréllées
+
+
+```{r}
+explainDataset(data[,1:40], c(1:40), T)
+```
+
+Dans notre cas, nous avons des nuages de point. On ne peut pas réellement déduire d'une quelconque dépendance des variables.
+
+L'analyse Bivariée ne nous fait pas plus avancer.
+
+```{r}
+res <- pcafunction(data)$PCA_component$Fi
+explainKmeans(res, kmeansfunction(res, k=2))
+```
+
+Nous remarquons bien la clusterisation des individus malades et sains grâce à la projection des individus et kmeans.
+
+```{r}
+res <- pcafunction(data)$PCA_component$Gi
+explainKmeans(res, kmeansfunction(res, k=2))
+```
+
+Nous avons la segmentation des gènes par k-means, en revanche on ne pas interpréter car nous ne savons pas quel cluster contient les gène responsables de la maladie ou non.
+
+```{r}
+explainPCA(pcafunction(data, axisNumber = 2))
+```
+
+Interprétation :
+
+Comme nous le voyons sur les cercles de corrélations, l'axe 1 est interprétable malgré le fait que de nombreuses variables soient mal représentées (à prendre avec des pincettes). Ceci est dû à la conservation d'uniquement deux axes, ce qui représente un faible pourcentage d'information captée (voir fichier test_pca.R pour les comparaisons de l'inertie)
+
+La plupart des individus ayant participé positivement à l'axe sont les individus sains et inversement avec une contribution négative, les individus malade.
+On en déduit donc que les variables ayant le plus négativement contribué représentent les gènes potentiellement pathogènes, contrairement à ceux qui ont contribué positivement qui peuvent signifier soit des gènes immunisant ou neutres.
+
+L'axe 2 est quant à lui difficilement interprétable au vu de la mauvaise représentation des variables que ce soit positivement ou négativement.De plus, il mélange les individus malades et sains, ce qui ne nous aide pas.
+
+L'ACP réalisé sur ce jeu de données est difficilement interprétable dans le sens où il faudrait conserver beaucoup d'axes et donc peu réduire la dimension initiale de la matrice.

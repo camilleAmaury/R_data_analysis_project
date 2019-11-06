@@ -1,6 +1,6 @@
 library(ade4)
 
-M <- t(read.csv(file="Projet M1 AD 1920.csv", header=FALSE, sep=","))
+M <- t(read.csv(file="dataset.csv", header=FALSE, sep=","))
 
 # our function
 acp_package <- pcafunction(M, axisNumber=2)
@@ -225,3 +225,9 @@ print(ctr_var_R[1:5,])
 print(ctr_var_package[1:5,])
 # should be true
 print(matequal(ctr_var_R, ctr_var_package[,1:ax]))
+
+print(acp_package$base_component$colnames)
+
+# test pca dudi
+s.corcircle(Gi_R,xax=1,yax=2)
+s.corcircle(Gi_package,xax=1,yax=2)

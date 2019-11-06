@@ -20,15 +20,20 @@
 - R<br/>
 - Anaconda 3 Environment<br/>
 - Trello and Git<br/>
-- Jupyter Notebook <br/><br/>
+- Rstudio <br/><br/>
+
+### Files :
+<br/>
+- rapport : "/Rapport/Rapport ADD.pdf"<br/>
+- annexes : "/Rapport/Annexes.pdf"<br/>
+- Dataset : "/dataset.csv"<br/>
+- tested function : "/R/test/" <br/><br/>
+- function : "/R/" <br/><br/>
 
 ## Documentation
 <br/>
 
 ### Installation and beginning
-<br/>
-<br/>
-Download the package on ... (coming soon).
 <br/>
 <br/>
 After the package is installed, just use it as a normal library in R.
@@ -47,8 +52,6 @@ The pca function have three main categories :<br/>
 - The base objects (matrix and calculation to prepare our pca)<br/>
 - The pca's axes, factors, projection of variables and individuals and more ...<br/>
 - The pca's interpreted datas (inertia, cumulative percentages, correlation)<br/><br/>
-
-In the future, the pca's object could be used in other functions to draw multiple plots ... (coming soon)
 <br/>
 
 ```R
@@ -84,6 +87,8 @@ This will return a list of pca components including :
 ```R
 # Base components
 nantes_pca$base_component$base #the main matrix
+nantes_pca$base_component$rownames #the dataframe's rownames or a auto rownames
+nantes_pca$base_component$colnames #the dataframe's colnames or a auto colnames
 nantes_pca$base_component$G #the gravity center of your matrix
 nantes_pca$base_component$M_centered #the centered matrix
 nantes_pca$base_component$S #the covariance matrix (if bias=TRUE S main diagonal is the biaised variance 1/n)
@@ -108,6 +113,17 @@ nantes_pca$PCA_component$Gi #Variables matrix projection
 ```
 
 <br/>
+<br/>
+
+```R
+# PCA components
+nantes_pca$PCA_interpretation$qlt_Fi #the relative contribution (qlt) of individuals
+nantes_pca$PCA_interpretation$ctr_Fi #the absolute contribution (ctr) of individuals
+nantes_pca$PCA_interpretation$qlt_Gi #the relative contribution (qlt) of variables
+nantes_pca$PCA_interpretation$ctr_Gi #the absolute contribution (ctr) of variables
+```
+
+<br/>
 
 ### Kmeans 
 
@@ -117,13 +133,11 @@ The categorical algorithm for classification K-means  :<br/>
 - Returns the cluster as a unique vector with every individuals as an indice, and his value his cluster number<br/>
 - Returns the clusters' centers point<br/>
 - Implements multiple methods (distance, initialization) <br/><br/>
-
-In the future, the K-means' object could be used in other functions to draw multiple plots ... (coming soon)
 <br/>
 
 ```R
 #By Default
-nantes_kmeans <- kmeansfunction(M, k=-1, d="euclidian", initialization="random", precision=0.001, logs=FALSE)
+nantes_kmeans <- kmeansfunction(M, k=-1, d="euclidian", initialization="random", precision=0.001, logs=FALSE, seed = -1, kMax = -1)
 ```
 
 <br/>
@@ -134,6 +148,7 @@ This will return a list compunded of clusters' centers point and cluster's membe
 # returns
 nantes_pca$centers #the clusters' center points as a matrix
 nantes_pca$clusters #cluster's membership of individuals as a vector
+nantes_pca$k #the choosen k cluster (automatic or not depending if k specified or not)
 ```
 
 <br/>
@@ -167,6 +182,16 @@ nantes_kmeans <- kmeansfunction(M, logs=TRUE)
 # the cluster number, note that if you let it to -1, it will automatically do 1:k clusters and choose the best one
 nantes_kmeans <- kmeansfunction(M, k=-1) # k will be choosen within the algorithm
 nantes_kmeans <- kmeansfunction(M, k=2) # k is specified, this will only create two clusters
+
+# kMax parameters
+# from 2 to min(number of indivduals, kMax) iteration to determines the best cluster number
+nantes_kmeans <- kmeansfunction(M, kMax=-1) # k is not specified, will do from 2:10 clusters
+nantes_kmeans <- kmeansfunction(M, kMax=100) # specified kMax, will do from 2:100 clusters
+
+# seed parameters
+# the seed affected to probability, enables to find the same initial clusters with the random method
+nantes_kmeans <- kmeansfunction(M, seed=-1) # not specified
+nantes_kmeans <- kmeansfunction(M, seed=100) # specified seed
 ```
 
 <br/>
@@ -184,4 +209,22 @@ We decided to work additionally on implementing our own Eigen function  :<br/>
 ```R
 #By Default
 nantes_eigen <- eigenfunction(M)
+```
+
+### plotAndExplain
+
+<br/>
+<br/>
+Function which print and plot all the data of you pca/kmeans/one or two dimensions analysis :<br/>
+<br/>
+
+```R
+#To explain PCA
+explainPCA(pca_result, individualRate=1/n, variableRate=1/p)
+#To explain Kmeans, M represents the projection of variables/individuals, kmeans the return of the kmeans function apply to initial datas
+explainKmeans(M, kmeans) 
+#To explain Dataset monodimensional
+explainDataset(M, colnames, bidimensionnal=FALSE)
+#To explain Dataset bidimensional
+explainDataset(M, colnames, bidimensionnal=TRUE)
 ```

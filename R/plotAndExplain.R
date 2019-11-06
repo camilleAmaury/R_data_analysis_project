@@ -21,7 +21,7 @@ explainPCA <- function(pca, individualRate=-1, variableRate=-1){
         li[["indi_neg"]] <- c(li[["indi_neg"]], j)
         chaine_indi_min = paste0(chaine_indi_min, pca$base_component$rownames[j], sep=",")
       }else{
-        li[["indi_pos"]] <- c(li[["indi_neg"]], j)
+        li[["indi_pos"]] <- c(li[["indi_pos"]], j)
         chaine_indi_max = paste0(chaine_indi_max, pca$base_component$rownames[j], sep=",")
       }
     }
@@ -50,9 +50,7 @@ explainPCA <- function(pca, individualRate=-1, variableRate=-1){
     #plot correlation circle
     s.corcircle(pca$PCA_component$Gi[li[["var_neg"]],], xax = 1, yax = 2, label = pca$base_component$colnames[li[["var_neg"]]], clabel = 1, grid = TRUE, sub = paste0("Axis ", i," : variable negative contribution"), csub = 1, possub = "bottomleft", cgrid = 0, fullcircle = TRUE, box = FALSE, add.plot = FALSE)
     #plot correlation circle
-    #if(is.null(li[["var_pos"]])){
-      #s.corcircle(pca$PCA_component$Gi[li[["var_pos"]],], xax = 1, yax = 2, label = pca$base_component$colnames[li[["var_pos"]]], clabel = 1, grid = TRUE, sub = paste0("Axis ", i," : variable positive contribution"), csub = 1, possub = "bottomleft", cgrid = 0, fullcircle = TRUE, box = FALSE, add.plot = FALSE)
-    #}
+    s.corcircle(pca$PCA_component$Gi[li[["var_pos"]],], xax = 1, yax = 2, label = pca$base_component$colnames[li[["var_pos"]]], clabel = 1, grid = TRUE, sub = paste0("Axis ", i," : variable positive contribution"), csub = 1, possub = "bottomleft", cgrid = 0, fullcircle = TRUE, box = FALSE, add.plot = FALSE)
     #plot cloud of point
     plot(pca$PCA_component$Fi[li[["indi_neg"]],], type="p",  sub = paste0("Axis ", i," : individual negative contribution"))
     text(pca$PCA_component$Fi[li[["indi_neg"]],], label = pca$base_component$colnames[li[["indi_neg"]]], cex= 0.7, pos=3)
@@ -96,7 +94,7 @@ explainDataset <- function(M, colnames, bidimensionnal=FALSE){
     print("# ------------------------ # Comparison of position # ------------------------ # ")
 
     for(i in 1:length(meanVar)){
-      mean_med_comparison <- if(meanVar[i] == medianVar[i]) "Centred Variable" else (if(meanVar[i] * 1.25 >= medianVar[i] && meanVar[i] * 0.75 <= medianVar[i]) "Outliers detected" else "Not centred but no outliers")
+      mean_med_comparison <- if(meanVar[i] == medianVar[i]) "Centred Variable" else (if(meanVar[i] * 1.25 >= medianVar[i] && meanVar[i] * 0.75 <= medianVar[i]) "Not centred but no outliers" else "Outliers detected")
       print(cat("v", i, " : \n", "   mean : ", meanVar[i], "\n   median : ", medianVar[i], "\n   mode : ", modeVar[i], "\n   Comparison between mean and median : ", mean_med_comparison))
       print("------------------------")
     }
@@ -122,7 +120,10 @@ explainDataset <- function(M, colnames, bidimensionnal=FALSE){
     print("# ------------------------ # X2 # ------------------------ # ")
     for(i in 1:(ncol(M)-1)){
       newM <- abs(M[,i:i+1])
-      print(chisq.test(newM))
+      khi <- chisq.test(newM)
+      print(khi)
+      print(paste0("Variables[", i, ",", i+1,"], Considérons un seuil à 0.05, on peut alors ", if(khi[["p.value"]] > 0.05) "rejeter l'hypothèse nulle d'indépendance" else "rejeter l'hypothèse d'indépendance"))
+      print("------------------------")
     }
 
     meanVar <- apply(M,2,mean)
@@ -131,9 +132,10 @@ explainDataset <- function(M, colnames, bidimensionnal=FALSE){
     dataframe_position <- data.frame("mean" = meanVar, "median"=medianVar, "mode"=modeVar)
 
     for(i in 1:(ncol(M)-1)){
-      hist(M[,i:i+1])
-      #plot(M)
-      print(summary(lm(M[,i] ~ M[,i+1])))
+      linear_reg <- lm(M[,i] ~ M[,i+1])
+      print(summary(linear_reg))
+      plot(M[,i] ~ M[,i+1])
+      abline(linear_reg, col = "red")
     }
   }
 }
